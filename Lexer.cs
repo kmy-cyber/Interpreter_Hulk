@@ -200,7 +200,7 @@ namespace INTERPRETE_C__to_HULK
                     return new Token(TokenType.OPERATOR,'@');
                 }
 
-                Input_Error("caracter" + currentChar + "no reconocido"); 
+                Input_Error("Unknown character " + "\'" +currentChar + "\'"); 
             }
             return new Token(TokenType.EOF,null);
         }
@@ -235,6 +235,8 @@ namespace INTERPRETE_C__to_HULK
                     return new Token(TokenType.COS,"cos");
                 case "sen":
                     return new Token(TokenType.SEN,"sen");
+                case "log":
+                    return new Token(TokenType.LOG, "log");
                 default:
                     return new Token(TokenType.VARIABLE, word);
             }
@@ -242,9 +244,9 @@ namespace INTERPRETE_C__to_HULK
 
         #region Auxiliares
 
-        public void Input_Error(string error )
+        private void Input_Error(string error )
         {
-            throw new Exception(error);
+            throw new Exception("LEXICAL ERROR: " + error);
         }
 
         public void Move_on()//avanza al siguiente
@@ -275,6 +277,11 @@ namespace INTERPRETE_C__to_HULK
             {
                 number+= currentChar;
                 Move_on();
+            }
+            if(char.IsLetter(currentChar))
+            {
+                number+= currentChar;
+                Input_Error("Invalid token " + "\'"+ number +"\'" );
             }
             return int.Parse(number);
         }

@@ -45,7 +45,15 @@ namespace INTERPRETE_C__to_HULK
 
         public void Choice(Node node)
         {
-            Evaluate(node);
+            switch (node.Type)
+            {
+                case "declared_function":
+                    Console.WriteLine(Evaluate(node));
+                    break;  
+                default:
+                    Evaluate(node);
+                    break;                  
+            }
         }
 
         public dynamic? Evaluate(Node node)
@@ -66,7 +74,11 @@ namespace INTERPRETE_C__to_HULK
                 case "d_function_name":
                     return node.Value;
                 case "+":
-                    return Evaluate(node.Children[0]) + Evaluate(node.Children[1]);
+                    //dynamic ?left_n = Evaluate(node.Children[0]);
+                    //dynamic ?right_n = Evaluate(node.Children[1]);
+                    //Type_Expected(right_n,left_n,"number","+");
+                    //return left_n + right_n;
+                    return Evaluate(node.Children[0]) - Evaluate(node.Children[1]);
                 case "-":
                     return Evaluate(node.Children[0]) - Evaluate(node.Children[1]);
                 case "*":
@@ -110,7 +122,10 @@ namespace INTERPRETE_C__to_HULK
                     return Math.Cos(value_cos);
                 case "sen":
                     dynamic? value_sen = Evaluate(node.Children[0]);
-                    return Math.Sin(value_sen);    
+                    return Math.Sin(value_sen);  
+                case "log":
+                    dynamic? value_log = Evaluate(node.Children[0]);
+                    return Math.Log10(value_log);
                 case "Conditional":
                     if(Evaluate(node.Children[0]))
                     {
@@ -122,43 +137,38 @@ namespace INTERPRETE_C__to_HULK
                     Function_B function = new Function_B(node.Children[0].Value,node.Children[2],Var);
                     if(Function_Exist(node.Children[0].Value))
                     {
-                        throw new Exception("La funcion"+ node.Children[0]+"ya tiene una definicion en el contexto actual");
+                        throw new Exception("The function "+ "\' " + node.Children[0].Value + " \'" + "already exist in the current context");
                     }
                     functions_declared.Add(function);
-                    
                     return functions_declared;
                 case "declared_function":
-                    string name = node.Children[0].Value;
+                    string ?name = node.Children[0].Value;
                     Node param_f = node.Children[1];
-
                     if(Function_Exist(name))
                     {
                         Dictionary<string,dynamic> Scope_actual = new Dictionary<string,dynamic>();
                         Scopes.Add(Scope_actual);
-
                         int f_position = Call_Function(functions_declared,name,param_f);
-                        
                         dynamic? value = Evaluate(functions_declared[f_position].Operation_Node);
                         Scopes.Remove(Scopes[Scopes.Count-1]);
-
                         return value;
                     }
                     else
                     {
-                        throw new Exception("La funcion"+ name +" no existe declarada en el contexto actual");
+                        Input_Error ("The function "+ name +" does not exist in the current context");
                     }
-                break;
+                    break;
                 case "assigment_list":
                     Save_Var(node);   
                     break;
                 case "Let":
                     Evaluate(node.Children[0]);
-                    dynamic result = Evaluate(node.Children[1]);
+                    dynamic ?result = Evaluate(node.Children[1]);
                     Scopes.Remove(Scopes[Scopes.Count-1]);
                     return result;
                     
                 default:
-                    throw new Exception("Operador desconocido: " + node.Type);
+                    throw new Exception("SEMANTIC ERROR: Unknown operator: " + node.Type);
             }
             return 0;
         }
@@ -189,11 +199,11 @@ namespace INTERPRETE_C__to_HULK
                 dynamic value = Evaluate(Child.Children[1]);
                 if(Var_let_in.ContainsKey(name))
                 {
-                    throw new Exception ("La variable"+ name +" ya tiene una definicion (ya existe en el contexto actual)");
+                    Input_Error ("The variable "+ name +" already has a definition in the current context");
                 }
                 if(Function_Exist(name))
                 {
-                    throw new Exception("La variable"+ name +" que intenta declarar ya tiene una definicion como funcion");
+                    Input_Error ("The variable "+ name +" already has a definition as a function in the current context");
                 }
                 
                 Var_let_in.Add(name, value);
@@ -237,13 +247,13 @@ namespace INTERPRETE_C__to_HULK
                     }
                     else
                     {
-                        throw new Exception ("La cantidad de parametros insertados en la funcion "+ name +" no coincide con los que debe recibir la funcion");
+                        Input_Error ("Function "+ name + " receives " +f[i].variable_param.Count+" argument(s), but "+ param.Children.Count +" were given.");
                     }
                 }
             }
             if(!is_found)
             {
-                throw new Exception ("La funcion "+ name +" no ha sido declarada");
+                Input_Error ("The function "+ name +" has not been declared");
             }
 
             return -1;
@@ -260,5 +270,19 @@ namespace INTERPRETE_C__to_HULK
             }
             return false;
         }
+
+        private void Input_Error(string error )
+        {
+            throw new Exception("SEMANTIC ERROR: " + error);
+        }
+
+        private void Type_Expected(dynamic value1, dynamic value2 , string type, string op)
+        {
+            if((value1.getType()) != type || value2.getType != type)
+            {
+                Input_Error("Operator \'"+ op+"\' cannot be used between \'" + value1 +"\' and \'"+ value2 +"\'");
+            }
+        }
+        
     }
 }

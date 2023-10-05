@@ -36,6 +36,7 @@ namespace INTERPRETE_C__to_HULK
         //? Reserved Word
         COS,
         SEN,
+        LOG,
 
         //?
         VARIABLE,

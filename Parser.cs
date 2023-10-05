@@ -225,7 +225,7 @@ namespace INTERPRETE_C__to_HULK
                     Node node = Layer_5();
                     if(position>=TS.Count && TS[position].Type != TokenType.R_PHARENTESYS )
                     {
-                        Input_Error("Se espera ')'");
+                        Input_Error(" ')' Expected!");
                     }
                     position++;
                     return node;
@@ -303,6 +303,15 @@ namespace INTERPRETE_C__to_HULK
                     Expect(TokenType.R_PHARENTESYS, ")");
                     return new Node {Type = "sen", Children = new List<Node>{valor}};
                 }
+
+                else if(TS[position].Type == TokenType.LOG)
+                {
+                    position++;
+                    Expect(TokenType.L_PHARENTESYS,"(");
+                    Node valor = Layer_6();
+                    Expect(TokenType.R_PHARENTESYS, ")");
+                    return new Node {Type = "log", Children = new List<Node>{valor}};
+                }
                  
                 else if( position < TS.Count && Convert.ToString(TS[position].Value) == "let" )
                 {
@@ -324,9 +333,9 @@ namespace INTERPRETE_C__to_HULK
 
         #region Auxiliar
 
-            public void Input_Error(string error)
+            private void Input_Error(string error)
             {
-                throw new Exception(error);
+                throw new Exception("SYNTAX ERROR: " + error);
             }
 
             public void Expect(TokenType tokenType, object value)
@@ -337,7 +346,7 @@ namespace INTERPRETE_C__to_HULK
                 }
                 else
                 {
-                    Input_Error("[" +position + "] Error de sintaxis, se espera " + (string)value + " ,se recibio " + TS[position].Value);
+                    Input_Error("[" +position + "] " + (string)value + " Expected!, " + TS[position].Value + "was received");
                 }
             }
 
