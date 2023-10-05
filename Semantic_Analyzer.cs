@@ -78,7 +78,7 @@ namespace INTERPRETE_C__to_HULK
                     //dynamic ?right_n = Evaluate(node.Children[1]);
                     //Type_Expected(right_n,left_n,"number","+");
                     //return left_n + right_n;
-                    return Evaluate(node.Children[0]) - Evaluate(node.Children[1]);
+                    return Evaluate(node.Children[0]) + Evaluate(node.Children[1]);
                 case "-":
                     return Evaluate(node.Children[0]) - Evaluate(node.Children[1]);
                 case "*":
