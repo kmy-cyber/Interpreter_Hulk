@@ -74,21 +74,41 @@ namespace INTERPRETE_C__to_HULK
                 case "d_function_name":
                     return node.Value;
                 case "+":
-                    //dynamic ?left_n = Evaluate(node.Children[0]);
-                    //dynamic ?right_n = Evaluate(node.Children[1]);
-                    //Type_Expected(right_n,left_n,"number","+");
-                    //return left_n + right_n;
-                    return Evaluate(node.Children[0]) + Evaluate(node.Children[1]);
+                    dynamic ?left_s = Evaluate(node.Children[0]);
+                    dynamic ?right_s = Evaluate(node.Children[1]);
+                    Type_Expected(right_s,left_s,"number","+");
+                    return left_s + right_s;
+                    //return Evaluate(node.Children[0]) - Evaluate(node.Children[1]);
                 case "-":
-                    return Evaluate(node.Children[0]) - Evaluate(node.Children[1]);
+                    dynamic ?left_r = Evaluate(node.Children[0]);
+                    dynamic ?right_r = Evaluate(node.Children[1]);
+                    Type_Expected(right_r,left_r,"number","-");
+                    return left_r - right_r;
+                    //return Evaluate(node.Children[0]) - Evaluate(node.Children[1]);
                 case "*":
-                    return Evaluate(node.Children[0]) * Evaluate(node.Children[1]);
+                    dynamic ?left_m = Evaluate(node.Children[0]);
+                    dynamic ?right_m = Evaluate(node.Children[1]);
+                    Type_Expected(right_m,left_m,"number","*");
+                    return left_m * right_m;
+                    //return Evaluate(node.Children[0]) * Evaluate(node.Children[1]);
                 case "/":
-                    return Evaluate(node.Children[0]) / Evaluate(node.Children[1]);
+                    dynamic ?left_d = Evaluate(node.Children[0]);
+                    dynamic ?right_d = Evaluate(node.Children[1]);
+                    Type_Expected(right_d,left_d,"number","/");
+                    return left_d / right_d;
+                    //return Evaluate(node.Children[0]) / Evaluate(node.Children[1]);
                 case "^":
-                    return Math.Pow(Evaluate(node.Children[0]),Evaluate(node.Children[1]));
+                    dynamic ?left_p = Evaluate(node.Children[0]);
+                    dynamic ?right_p = Evaluate(node.Children[1]);
+                    Type_Expected(right_p,left_p,"number","^");
+                    return Math.Pow(left_p,right_p);
+                    //return Math.Pow(Evaluate(node.Children[0]),Evaluate(node.Children[1]));
                 case "%":
-                    return Evaluate(node.Children[0]) % Evaluate(node.Children[1]);
+                    dynamic ?left_u = Evaluate(node.Children[0]);
+                    dynamic ?right_u = Evaluate(node.Children[1]);
+                    Type_Expected(right_u,left_u,"number","%");
+                    return left_u % right_u;
+                    //return Evaluate(node.Children[0]) % Evaluate(node.Children[1]);
                 
                 //? Boolean operations
                 case ">":
@@ -104,7 +124,11 @@ namespace INTERPRETE_C__to_HULK
                 case "!=":
                     return Evaluate(node.Children[0]) != Evaluate(node.Children[1]);
                 case "@":
-                    return Evaluate(node.Children[0]) + Evaluate(node.Children[1]);
+                    dynamic ?left_st = Evaluate(node.Children[0]);
+                    dynamic ?right_st = Evaluate(node.Children[1]);
+                    Type_Expected(right_st,left_st,"string","+");
+                    return left_st + right_st;
+                    //return Evaluate(node.Children[0]) + Evaluate(node.Children[1]);
 
                 //? Expressions
                 case "f_name":
@@ -278,7 +302,15 @@ namespace INTERPRETE_C__to_HULK
 
         private void Type_Expected(dynamic value1, dynamic value2 , string type, string op)
         {
-            if((value1.getType()) != type || value2.getType != type)
+            if(value1 is double && value2 is double && type == "number")
+            {
+                return;
+            }
+            else if(value1 is string && value2 is string && type == "string")
+            {
+                return;
+            }
+            else
             {
                 Input_Error("Operator \'"+ op+"\' cannot be used between \'" + value1 +"\' and \'"+ value2 +"\'");
             }
